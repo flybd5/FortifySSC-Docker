@@ -3,6 +3,8 @@
 # and produce an image with Fortify SSC installed and ready to be deployed to ECS or ??.
 # The Dockerfile dependency is the license file and the install file for Fortify SSC 19.2.0,
 # which you must provide, as well as a parameters required in the conf folder.
+# You must also provide a MySQL database already configured as per the user manual,
+# having had the create-tables.sql script executed and seeds applied.
 # ------------------------------------------------------------------------------------
 # -----------------------------------------------------------------
 # Start with the official Centos base image. Should be around 75mb.

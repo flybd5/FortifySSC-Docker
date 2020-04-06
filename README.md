@@ -7,7 +7,7 @@ Clone this repo to a local directory with [SSH](git@git.aoc-pathfinder.cloud:jji
 ### Dependencies
 1. The Fortify SSC distribution zip file.
 2. A Fortify SSC license file.
-3. MySQL and a previously installed and configurred database.
+3. MySQL and a previously installed and configured database.
 ### Build
 `docker build . -t fortifyssc-centos:latest` or use the provided `./build` script
 ### Run

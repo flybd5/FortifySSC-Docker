@@ -4,6 +4,10 @@ and produce an image with Fortify SSC installed and ready to be deployed to ECS 
 ## Installation
 Clone this repo to a local directory with [SSH](git@git.aoc-pathfinder.cloud:jjimenez/fortifyssc-docker-wip.git) or [HTTPS](https://git.aoc-pathfinder.cloud/jjimenez/fortifyssc-docker-wip.git).
 ## Usage
+### Dependencies
+1. The Fortify SSC distribution zip file.
+2. A Fortify SSC license file.
+3. MySQL and a previously installed and configurred database.
 ### Build
 `docker build . -t fortifyssc-centos:latest` or use the provided `./build` script
 ### Run

@@ -1,0 +1,11 @@
+[Unit]
+Description=Service to start Tomcat and Fortify SSC at container boot
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/opt/apache-tomcat-9.0.24/bin/catalina.sh run
+TimeoutStartSec=0
+
+[Install]
+WantedBy=default.target

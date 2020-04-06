@@ -1,0 +1,1 @@
+docker run -it -d --name ssc -v /run -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 8080:8080 fortifyssc-docker:latest

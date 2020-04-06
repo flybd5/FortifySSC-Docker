@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="10">
+
+    <!-- Manual to configuration: http://logging.apache.org/log4j/2.x/manual/configuration.html -->
+    <Properties>
+        <Property name="logPath">${sys:com.fortify.ssc.logPath:-ssc_logs}</Property>
+        <Property name="ssc.log.perf.level">off</Property>
+    </Properties>
+
+    <Appenders>
+        <!-- root logfile appender -->
+        <!-- This appender is referenced by the BIRT report generating engine! -->
+        <RollingFile name="SSC" fileName="${logPath}/ssc.log" filePattern="${logPath}/${date:yyyy-MM}/ssc-%d{MM-dd-yyyy}-%i.log">
+            <PatternLayout>
+                <pattern>%d %X{clientIP} %X{requestURI} [%p] %c - %enc{%m}%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+
+        <!-- for avoid line break symbols escaping -->
+        <RollingFile name="systemspec" fileName="${logPath}/ssc.log" filePattern="${logPath}/${date:yyyy-MM}/ssc-%d{MM-dd-yyyy}-%i.log">
+            <PatternLayout>
+                <pattern>%d %X{clientIP} %X{requestURI} [%p] %c - %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+
+        <!-- security audit appender -->
+        <RollingFile name="auditlog" fileName="${logPath}/ssc_audit.log" filePattern="${logPath}/${date:yyyy-MM}/ssc_audit-%d{MM-dd-yyyy}-%i.log">
+            <PatternLayout>
+                <pattern>%d %X{clientIP} %X{requestURI} - %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+
+        <!-- fpr metrics appender -->
+        <RollingFile name="metricslog" fileName="${logPath}/ssc_metrics.log" filePattern="${logPath}/${date:yyyy-MM}/ssc_metrics-%d{MM-dd-yyyy}-%i.log">
+            <PatternLayout>
+                <pattern>%d %X{clientIP} %X{requestURI} - %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+
+        <!-- performance appender -->
+        <RollingFile name="perf" fileName="${logPath}/ssc_perf.log" filePattern="${logPath}/${date:yyyy-MM}/ssc_perf-%d{MM-dd-yyyy}-%i.log">
+            <PatternLayout>
+                <pattern>%d [%t] - %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+
+        <!-- audit assistant -->
+        <RollingFile name="auditassistant" fileName="${logPath}/ssc_auditassistant.log" filePattern="${logPath}/${date:yyyy-MM}/ssc_auditassistant-%d{MM-dd-yyyy}-%i.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss,SSS} [%t] %-5level %logger{36} - %msg%n" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
+
+        <!-- seeding -->
+        <RollingFile name="seeding" fileName="${logPath}/ssc_seeding.log" filePattern="${logPath}/${date:yyyy-MM}/ssc_seeding-%d{MM-dd-yyyy}-%i.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss,SSS} [%t] %-5level %logger{36} - %msg%n" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
+
+    </Appenders>
+
+    <Loggers>
+        <Root level="warn">
+            <AppenderRef ref="SSC"/>
+        </Root>
+
+        <!-- Root/General Fortify package -->
+        <Logger name="com.fortify" level="warn"/>
+
+        <Logger name="com.fortify.manager.web.listeners.AppInitializer" level="info" />
+        <Logger name="com.fortify.ssc.init.AppInitLifecycle" level="info"  />
+
+        <!-- Apache Tomcat -->
+        <Logger name="org.apache.catalina.startup" level="info"/>
+        <Logger name="org.apache.coyote" level="info"/>
+
+        <!-- Authentication -->
+        <Logger name="org.springframework.security" level="warn"/>
+        <Logger name="org.springframework.security.event.authentication.LoggerListener" level="warn"/>
+        <Logger name="org.springframework.security.providers.ldap" level="warn"/>
+        <Logger name="com.fortify.manager.security" level="warn"/>
+        <Logger name="com.fortify.manager.web.security" level="warn"/>
+        <Logger name="com.fortify.manager.service" level="warn"/>
+
+        <!-- Security Audit -->
+        <Logger name="com.fortify.auditlog" level="info" additivity="false">
+            <AppenderRef ref="auditlog"/>
+        </Logger>
+
+        <!-- Metrics Audit -->
+        <Logger name="com.fortify.metricslog" level="info" additivity="false">
+            <AppenderRef ref="metricslog"/>
+        </Logger>
+
+        <!-- DAL -->
+        <Logger name="org.apache.commons.dbcp" level="warn"/>
+        <Logger name="org.hibernate.impl" level="warn"/>
+        <Logger name="org.hibernate.SQL" level="warn"/>
+        <Logger name="org.hibernate.type" level="error"/>
+        <Logger name="org.hibernate.mapping.RootClass" level="error"/>
+        <Logger name="org.hibernate.tuple.entity.PojoEntityTuplizer" level="fatal"/>
+        <Logger name="com.fortify.manager.DAL" level="warn"/>
+        <Logger name="org.hibernate.engine.jdbc.spi.SqlExceptionHelper" level="warn">
+            <!-- Avoid spamming logs on WARN level with matching messages when using DB2 -->
+            <!-- This does not avoid related SQL Warning on DEBUG level -->
+            <RegexFilter regex="(SQL Warning Code: 4474, SQLState: 01000)|((?s).*\bConnection read-only mode is not enforceable after the connection has been established\b.*\bERRORCODE=4474, SQLSTATE=01000\b.*)"
+                         onMatch="DENY" onMismatch="NEUTRAL"/>
+        </Logger>
+        <Logger name="org.hibernate.orm.deprecation" additivity="false" level="warn">
+            <!-- Avoid spamming logs on warn level for existing uses of o.h.Criteria API. -->
+            <RegexFilter regex=".*HHH90000022.*" onMatch="DENY" onMismatch="NEUTRAL"/>
+        </Logger>
+
+        <!-- Runtime -->
+        <Logger name="com.fortify.manager.service.runtime" level="info"/>
+        <Logger name="com.fortify.runtime" level="info"/>
+
+        <!-- Spring Auto-wiring to log everything related to autowiring change WARN to DEBUG -->
+        <Logger name="org.springframework.beans.factory.support" level="warn"/>
+
+        <!-- Spring AOP -->
+        <Logger name="org.springframework.aop.framework" level="error"/>
+
+        <!-- BIRT reporting -->
+        <Logger name="org.eclipse.birt" level="warn"/>
+
+        <!-- BLL -->
+        <Logger name="com.fortify.manager.BLL" level="warn"/>
+        <Logger name="com.fortify.manager.logging.MethodInputOutputTraceInterceptor" level="warn"/>
+
+        <!-- Fulltext search -->
+        <Logger name="com.fortify.manager.DAO.fulltext" level="warn"/>
+        <Logger name="com.fortify.manager.service.fulltext" level="warn"/>
+
+        <!-- File Transfers -->
+        <Logger name="org.springframework.web.multipart" level="warn"/>
+        <Logger name="com.fortify.manager.controller" level="warn"/>
+
+        <!-- JMS -->
+        <Logger name="org.springframework.jms.core" level="warn"/>
+        <Logger name="com.fortify.manager.service.event" level="warn"/>
+
+        <!-- Liquibase -->
+        <Logger name="liquibase" level="info"/>
+
+        <!-- Performance -->
+        <Logger name="com.fortify.perf" level="${sys:ssc.log.perf.level}" additivity="false">
+            <AppenderRef ref="perf"/>
+        </Logger>
+
+        <!-- Web Services -->
+        <Logger name="org.springframework.oxm" level="warn"/>
+        <Logger name="org.springframework.ws" level="warn"/>
+        <Logger name="com.fortify.manager.WSEndpoint" level="warn"/>
+
+        <!-- Server API (RESTful) -->
+        <Logger name="com.fortify.server.platform.shared.endpoints" level="warn"/>
+        <Logger name="com.fortify.server.platform.shared.spring.RestApiExceptionHandlerAdvice" level="warn"/>
+
+        <!-- Guitools Model -->
+        <Logger name="com.fortify.systemspec" level="debug" additivity="false">
+            <AppenderRef ref="systemspec"/>
+        </Logger>
+
+        <Logger name="com.fortify.manager.security.ws.WSCallbackAuthenticationService" level="error"/>
+        <Logger name="com.fortify.manager.web.security.ws.AuthenticationInterceptor" level="error"/>
+
+        <!-- audit assistant -->
+        <Logger name="com.fortify.manager.BLL.impl.AuditAssistantBLLImpl" level="warn" additivity="false">
+            <AppenderRef ref="auditassistant"/>
+        </Logger>
+        <Logger name="com.fortify.manager.service.auditassistant" level="warn" additivity="false">
+            <AppenderRef ref="auditassistant"/>
+        </Logger>
+        <Logger name="com.fortify.manager.service.auditassistant.AuditAssistantScheduler" level="warn" additivity="false">
+            <AppenderRef ref="auditassistant"/>
+        </Logger>
+        <Logger name="com.fortify.crossbow.client" level="warn" additivity="false">
+            <AppenderRef ref="auditassistant"/>
+        </Logger>
+        <Logger name="com.fortify.fpr" level="warn" additivity="false">
+            <AppenderRef ref="auditassistant"/>
+        </Logger>
+
+        <!-- CloudScan -->
+        <Logger name="com.fortify.manager.service.cloudscan" level="warn"/>
+        <Logger name="com.fortify.manager.DAL.impl.updaters.CloudPoolUpdater" level="warn"/>
+        <Logger name="com.fortify.manager.DAL.impl.updaters.CloudWorkerUpdater" level="warn"/>
+        <Logger name="com.fortify.manager.DAL.impl.updaters.CloudJobUpdater" level="warn"/>
+        <Logger name="com.fortify.manager.support.CloudCtrlScheduledTasks" level="warn"/>
+
+        <!-- Common -->
+        <Logger name="com.fortify.manager.logging.EscalatingLog4jReceiver" level="warn"/>
+
+        <!-- Deserialization -->
+        <Logger name="com.fortify.pub.bugtracker.plugin.tfs.oauth.FileBasedClassNameMatcherImpl" level="info"/>
+        <Logger name="com.fortify.pub.bugtracker.plugin.tfs.oauth.CalendarDeserializableClass" level="info"/>
+        <Logger name="com.fortify.manager.io.serialization" level="info"/>
+
+        <!-- Plugin framework -->
+        <Logger name="com.fortify.plugin" level="info"/>
+        <Logger name="com.fortify.manager.plugin" level="info"/>
+        <Logger name="com.fortify.manager.service.parser.AnalysisParserRegistryImpl" level="info"/>
+        <Logger name="org.apache.camel" level="warn"/>
+        <Logger name="org.apache.activemq" level="warn"/>
+
+        <Logger name="com.fortify.manager.BLL.impl.SeedManagerImpl" level="info" additivity="false">
+            <AppenderRef ref="seeding"/>
+        </Logger>
+        <Logger name="com.fortify.ssc.init.SeedContextProvider" level="info" additivity="false">
+            <AppenderRef ref="seeding"/>
+        </Logger>
+    </Loggers>
+</Configuration>

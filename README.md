@@ -1,6 +1,7 @@
 # FortifySSC-Docker [WIP!]
 This project is intended to start from a Centos 7 image from the Docker registry
-and produce an image with Fortify SSC installed and ready to be deployed to ECS Fargate or EC2.
+and produce an image with Fortify SSC installed and ready to be deployed to ECS EC2.
+This container will NOT run on Fargate on AWS because it needs to mount host dirs.
 ## Installation
 Clone this repo to a local directory with [SSH](git@git.aoc-pathfinder.cloud:jjimenez/fortifyssc-docker-wip.git) or [HTTPS](https://git.aoc-pathfinder.cloud/jjimenez/fortifyssc-docker-wip.git).
 ## Usage
